@@ -25,3 +25,10 @@ class Konto:
             if (int(pesel[2]) > 1 or (int(pesel[0]) >= 6 and int(pesel[2]) < 2)):
                 return True
         return False
+
+    def transfer_in(self, x):
+        self.saldo += x
+
+    def transfer_out(self, x):
+        if (self.saldo >= x):
+            self.saldo -= x
