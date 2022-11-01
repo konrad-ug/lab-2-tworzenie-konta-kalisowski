@@ -32,3 +32,7 @@ class Konto:
     def transfer_out(self, x):
         if (self.saldo >= x):
             self.saldo -= x
+
+    def transfer_out_express(self, x):
+        if (self.saldo >= x):
+            self.saldo -= x + 1

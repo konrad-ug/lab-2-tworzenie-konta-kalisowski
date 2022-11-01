@@ -42,3 +42,29 @@ class TestCreateCompanyAccount(unittest.TestCase):
         account.transfer_out(100)
         account.transfer_in(10)
         self.assertEqual(account.saldo, 500 + 100 - 100 + 10)
+
+    def test_series_of_transfers_express(self):
+        account = Konto_firmowe(self.nip, self.nazwa_firmy)
+        account.saldo = 500
+        account.transfer_out_express_buisness(50)
+        account.transfer_out_express_buisness(150)
+        account.transfer_out_express_buisness(150)
+        self.assertEqual(account.saldo, 500 - 55 - 155 - 155)
+
+    def test_balance_enough_transfer_express_buisness(self):
+        account = Konto_firmowe(self.nip, self.nazwa_firmy)
+        account.saldo = 60
+        account.transfer_out_express_buisness(50)
+        self.assertEqual(account.saldo, 5)
+
+    def test_balance_just_enough_transfer_express_buisness(self):
+        account = Konto_firmowe(self.nip, self.nazwa_firmy)
+        account.saldo = 50
+        account.transfer_out_express_buisness(50)
+        self.assertEqual(account.saldo, -5)
+
+    def test_balance_not_enough_transfer_express_buisness(self):
+        account = Konto_firmowe(self.nip, self.nazwa_firmy)
+        account.saldo = 40
+        account.transfer_out_express_buisness(50)
+        self.assertEqual(account.saldo, 40)

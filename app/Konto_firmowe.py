@@ -14,3 +14,7 @@ class Konto_firmowe(Konto):
             return "Niepoprawny NIP!"
         else:
             return pesel
+
+    def transfer_out_express_buisness(self, x):
+        if (self.saldo >= x):
+            self.saldo -= x + 5
