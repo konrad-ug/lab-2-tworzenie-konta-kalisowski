@@ -69,3 +69,61 @@ class TestCreateBankAccount(unittest.TestCase):
                          0, "Saldo powinno wynosić 0!")
         self.assertEqual(konto_kod_wiek_zastary.prom_check(),
                          0, "Saldo powinno wynosić 0")
+
+
+class BalanceOperations(unittest.TestCase):
+    imie = "Dariusz"
+    nazwisko = "Januszewski"
+    pesel = "61092909876"
+
+    def test_balance_decreases_transfer_out(self):
+        account = Konto(self.imie, self.nazwisko, self.pesel)
+        account.saldo = 500
+        account.transfer_out(100)
+        self.assertEqual(account.saldo, 500 - 100)
+
+    def test_balance_increases_transfer_in(self):
+        account = Konto(self.imie, self.nazwisko, self.pesel)
+        account.saldo = 500
+        account.transfer_in(100)
+        self.assertEqual(account.saldo, 500 + 100)
+
+    def test_balance_not_enough_transfer_out(self):
+        account = Konto(self.imie, self.nazwisko, self.pesel)
+        account.saldo = 50
+        account.transfer_out(100)
+        self.assertEqual(account.saldo, 50)
+
+    def test_series_of_transfers(self):
+        account = Konto(self.imie, self.nazwisko, self.pesel)
+        account.saldo = 500
+        account.transfer_in(100)
+        account.transfer_out(100)
+        account.transfer_in(10)
+        self.assertEqual(account.saldo, 500 + 100 - 100 + 10)
+
+    def test_series_of_transfers_express(self):
+        account = Konto(self.imie, self.nazwisko, self.pesel)
+        account.saldo = 500
+        account.transfer_out_express(50)
+        account.transfer_out_express(150)
+        account.transfer_out_express(150)
+        self.assertEqual(account.saldo, 500 - 51 - 151 - 151)
+
+    def test_balance_enough_transfer_express(self):
+        account = Konto(self.imie, self.nazwisko, self.pesel)
+        account.saldo = 60
+        account.transfer_out_express(50)
+        self.assertEqual(account.saldo, 9)
+
+    def test_balance_just_enough_transfer_express(self):
+        account = Konto(self.imie, self.nazwisko, self.pesel)
+        account.saldo = 50
+        account.transfer_out_express(50)
+        self.assertEqual(account.saldo, -1)
+
+    def test_balance_not_enough_transfer_express(self):
+        account = Konto(self.imie, self.nazwisko, self.pesel)
+        account.saldo = 40
+        account.transfer_out_express(50)
+        self.assertEqual(account.saldo, 40)
