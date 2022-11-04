@@ -39,4 +39,4 @@ jobs:
         python -m coverage run -m unittest
     - name: Show coverage report
       run: |
-        python -m coverage report
+        python -m coverage report --fail-under=100
