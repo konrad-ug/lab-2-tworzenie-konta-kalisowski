@@ -8,6 +8,7 @@ class Konto_firmowe(Konto):
         self.nip = self.nip_check(nip)
         self.nazwa_firmy = nazwa_firmy
         self.saldo = 0
+        self.history = []
 
     def nip_check(self, pesel):
         if (len(pesel) != 10):
@@ -18,3 +19,4 @@ class Konto_firmowe(Konto):
     def transfer_out_express_buisness(self, x):
         if (self.saldo >= x):
             self.saldo -= x + 5
+            self.history.extend([-x, -5])
