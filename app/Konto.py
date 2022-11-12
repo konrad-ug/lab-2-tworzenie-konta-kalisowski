@@ -5,6 +5,7 @@ class Konto:
         self.pesel = self.pesel_check(pesel)
         self.prom = prom
         self.saldo = self.prom_check()
+        self.history = []
 
     def pesel_check(self, pesel):
         if (len(pesel) != 11):
@@ -28,11 +29,14 @@ class Konto:
 
     def transfer_in(self, x):
         self.saldo += x
+        self.history.append(x)
 
     def transfer_out(self, x):
         if (self.saldo >= x):
             self.saldo -= x
+            self.history.append(-x)
 
     def transfer_out_express(self, x):
         if (self.saldo >= x):
             self.saldo -= x + 1
+            self.history.extend([-x, -1])

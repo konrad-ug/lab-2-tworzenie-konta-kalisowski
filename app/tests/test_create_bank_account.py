@@ -127,3 +127,58 @@ class BalanceOperations(unittest.TestCase):
         account.saldo = 40
         account.transfer_out_express(50)
         self.assertEqual(account.saldo, 40)
+
+
+class HistoryOperations(unittest.TestCase):
+    name = "Dariusz"
+    surname = "Januszewski"
+    pesel = "01212567891"
+
+    def test_history_new_account(self):
+        account = Konto(self.name, self.surname, self.pesel)
+        self.assertListEqual(
+            account.history,
+            [],
+            "Historia transakcji nowego konta nie jest pusta!",
+        )
+
+    def test_history_transfer_in(self):
+        account = Konto(self.name, self.surname, self.pesel)
+        account.transfer_in(50)
+        self.assertListEqual(
+            account.history,
+            [50],
+            "Przelew przychodzący nie został dopisany do historii!",
+        )
+
+    def test_history_transfer_out(self):
+        account = Konto(self.name, self.surname, self.pesel)
+        account.saldo = 100
+        account.transfer_out(50)
+        self.assertListEqual(
+            account.history,
+            [-50],
+            "Przelew wychodzący nie został dopisany do historii!",
+        )
+
+    def test_history_transfer_exrpress(self):
+        account = Konto(self.name, self.surname, self.pesel)
+        account.saldo = 100
+        account.transfer_out_express(100)
+        self.assertListEqual(
+            account.history,
+            [-100, -1],
+            "Historia niepoprawna!",
+        )
+
+    def test_history_transfer_series(self):
+        account = Konto(self.name, self.surname, self.pesel)
+        account.saldo = 100
+        account.transfer_out(50)
+        account.transfer_in(50)
+        account.transfer_out_express(50)
+        self.assertListEqual(
+            account.history,
+            [-50, 50, -50, -1],
+            "Historia niepoprawna!",
+        )
