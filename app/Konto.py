@@ -40,3 +40,25 @@ class Konto:
         if (self.saldo >= x):
             self.saldo -= x + 1
             self.history.extend([-x, -1])
+
+    def check_credit_history(self):
+        check = True
+        if len(self.history) < 3:
+            return False
+        for x in self.history[-3:]:
+            if (x < 1):
+                check = False
+        return check
+
+    def count_last_5_operations(self):
+        sum = 0
+        for x in self.history[-5:]:
+            sum += x
+        return sum
+
+    def zaciagnij_kredyt(self, kwota):
+        if (self.check_credit_history() and self.count_last_5_operations() > kwota):
+            self.saldo += kwota
+            return True
+        else:
+            return False
