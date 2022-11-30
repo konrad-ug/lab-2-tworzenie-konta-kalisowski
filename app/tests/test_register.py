@@ -25,6 +25,16 @@ class TestRegister(unittest.TestCase):
         RejestrKont.addUser(user)
         self.assertEqual(RejestrKont.usersCount(), 4)
 
+    def test_3_search_user(self):
+        user = RejestrKont.searchUser(self.pesel)
+        self.assertEqual(user.imie, self.imie)
+        self.assertEqual(user.nazwisko, self.nazwisko)
+        self.assertEqual(user.pesel, self.pesel)
+
+    def test_4_search_user(self):
+        user = RejestrKont.searchUser("Stachu")
+        self.assertEqual(user, None)
+
     @classmethod
     def tearDownClass(cls):
         RejestrKont.users = []
