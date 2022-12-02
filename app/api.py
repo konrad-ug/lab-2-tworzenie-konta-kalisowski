@@ -8,7 +8,7 @@ app = Flask(__name__)
 def stworz_konto():
     dane = request.get_json()
     if (RejestrKont.searchUser(dane.get('pesel')) != None):
-        return "Konto o podanym numerze PESEL już istnieje", 409
+        return "Konto o podanym numerze PESEL już istnieje", 400
     if (dane.get('imie') and dane.get('nazwisko') and dane.get('pesel')):
         print(f"Request o stworzenie konta z danymi: {dane}")
         konto = Konto(dane["imie"], dane["nazwisko"], dane["pesel"])
@@ -29,3 +29,24 @@ def wyszukaj_konto_z_peselem(pesel):
 
     else:
         return jsonify(RejestrKont.searchUser(pesel).__dict__), 200
+
+
+@app.route("/konta/konto/<pesel>", methods=['PUT'])
+def update_account(pesel):
+    if (RejestrKont.searchUser(pesel) == None):
+        return jsonify("Nie znaleziono konta!"), 404
+    else:
+        dane = request.get_json()
+        print(dane)
+        RejestrKont.updateUser(pesel, dane)
+        return jsonify("Konto zaktualizowane"), 200
+
+
+@app.route("/konta/konto/<pesel>", methods=['DELETE'])
+def delete_account(pesel):
+    if (RejestrKont.searchUser(pesel) == None):
+        return jsonify("Nie znaleziono konta!"), 404
+
+    else:
+        RejestrKont.deleteUser(pesel)
+        return jsonify("Konto usunięte"), 200

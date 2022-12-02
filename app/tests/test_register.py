@@ -35,6 +35,28 @@ class TestRegister(unittest.TestCase):
         user = RejestrKont.searchUser("Stachu")
         self.assertEqual(user, None)
 
+    def test_5_delete_user(self):
+        RejestrKont.deleteUser(self.pesel)
+        self.assertEqual(RejestrKont.usersCount(), 3)
+
+    def test_6_delete_user_unexistent(self):
+        RejestrKont.deleteUser("Noone")
+        self.assertEqual(RejestrKont.usersCount(), 3)
+
+    def test_7_update_user(self):
+        data = {
+            "imie": "Stachu",
+            "nazwisko": "Jones",
+            "pesel": "61092909876",
+            "saldo": 1000
+        }
+        user, status = RejestrKont.updateUser(self.pesel, data)
+        self.assertEqual(user.imie, data['imie'])
+        self.assertEqual(user.nazwisko, data['nazwisko'])
+        self.assertEqual(user.pesel, data['pesel'])
+        self.assertEqual(user.saldo, data['saldo'])
+        self.assertEqual(status, 200)
+
     @classmethod
     def tearDownClass(cls):
         RejestrKont.users = []
