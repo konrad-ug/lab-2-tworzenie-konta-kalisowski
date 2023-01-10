@@ -1,6 +1,9 @@
-from decimal import Clamped
-import imp
 from app.Konto import Konto
+from datetime import date
+import requests
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class Konto_firmowe(Konto):
@@ -10,11 +13,14 @@ class Konto_firmowe(Konto):
         self.saldo = 0
         self.history = []
 
-    def nip_check(self, pesel):
-        if (len(pesel) != 10):
+    def nip_check(self, nip):
+        if (len(nip) != 10):
             return "Niepoprawny NIP!"
         else:
-            return pesel
+            if self.nip_real_check(nip):
+                return nip
+            else:
+                return "Pranie!"
 
     def transfer_out_express_buisness(self, x):
         if (self.saldo >= x):
@@ -27,6 +33,14 @@ class Konto_firmowe(Konto):
             if (x == -1775):
                 check = True
         return check
+
+    def nip_real_check(self, nip):
+        date_today = date.today()
+        url = os.environ.get("BANK_APP_MF_URL")
+        res = requests.get(f'{url}{nip}?date={date_today}')
+        if res.status_code == 200:
+            return True
+        return False
 
     def zaciagnij_kredyt(self, kwota):
         if (self.check_credit_zus() and self.saldo >= kwota * 2):

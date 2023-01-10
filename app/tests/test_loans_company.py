@@ -1,11 +1,14 @@
 import unittest
 from parameterized import parameterized
 from app.Konto_firmowe import Konto_firmowe
+from unittest.mock import patch
 
 
 class TestCompanyLoan(unittest.TestCase):
 
-    def setUp(self):
+    @patch('app.Konto_firmowe.Konto_firmowe.nip_real_check')
+    def setUp(self, mock_nip_real_check):
+        mock_nip_real_check.return_value = True
         self.konto = Konto_firmowe("Tesla", "1234567890")
 
     @parameterized.expand([
