@@ -1,6 +1,8 @@
 import unittest
+from datetime import date
 from app.Konto_firmowe import Konto_firmowe
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, MagicMock
+from ..SMTP import SMTPConnection
 
 
 class TestCreateCompanyAccount(unittest.TestCase):
@@ -170,3 +172,36 @@ class HistoryOperationsCompany(unittest.TestCase):
             [-50, 50, -50, -5],
             "Historia niepoprawna!",
         )
+
+
+class EmailSendingCompany(unittest.TestCase):
+    nip = "0123456789"
+    nazwa_firmy = "Tesla"
+
+    @ patch('app.Konto_firmowe.Konto_firmowe.nip_real_check')
+    def test_success_sending_email_with_history(self, mock_nip_real_check):
+        mock_nip_real_check.return_value = True
+        account = Konto_firmowe(self.nip, self.nazwa_firmy)
+        account.saldo = 100
+        account.transfer_out(50)
+        account.transfer_in(50)
+        smtp = SMTPConnection()
+        smtp.wyslij = MagicMock(return_value=True)
+        state = account.wyslij_historie_na_maila("testemail@test.com", smtp)
+        self.assertEqual(state, True, "Wysyłanie maila nie powiodło się!")
+        smtp.wyslij.assert_called_once_with(
+            f"Wyciag z dnia {date.today()}", f"Historia konta Twojej firmy to: {account.history}", "testemail@test.com")
+
+    @ patch('app.Konto_firmowe.Konto_firmowe.nip_real_check')
+    def test_fail_sending_email_with_history(self, mock_nip_real_check):
+        mock_nip_real_check.return_value = True
+        account = Konto_firmowe(self.nip, self.nazwa_firmy)
+        account.saldo = 100
+        account.transfer_out(50)
+        account.transfer_in(50)
+        smtp = SMTPConnection()
+        smtp.wyslij = MagicMock(return_value=False)
+        state = account.wyslij_historie_na_maila("testemail@test.com", smtp)
+        self.assertEqual(state, False, "Wysyłanie maila nie powiodło się!")
+        smtp.wyslij.assert_called_once_with(
+            f"Wyciag z dnia {date.today()}", f"Historia konta Twojej firmy to: {account.history}", "testemail@test.com")

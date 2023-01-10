@@ -47,3 +47,8 @@ class Konto_firmowe(Konto):
             self.saldo += kwota
             return True
         return False
+
+    def wyslij_historie_na_maila(self, email, smtp):
+        topic = f"Wyciag z dnia {date.today()}"
+        body = f"Historia konta Twojej firmy to: {self.history}"
+        return smtp.wyslij(topic, body, email)

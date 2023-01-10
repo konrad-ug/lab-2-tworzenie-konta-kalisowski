@@ -1,3 +1,6 @@
+from datetime import date
+
+
 class Konto:
     def __init__(self, imie, nazwisko, pesel, prom=None):
         self.imie = imie
@@ -62,3 +65,8 @@ class Konto:
             return True
         else:
             return False
+
+    def wyslij_historie_na_maila(self, email, smtp):
+        topic = f"Wyciag z dnia {date.today()}"
+        body = f"Twoja historia konta to: {self.history}"
+        return smtp.wyslij(topic, body, email)
