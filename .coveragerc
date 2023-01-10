@@ -1,0 +1,6 @@
+[run]
+omit = 
+    app/SMTP.py
+    */site-packages/*
+    .venv/*
+    */usr/*
