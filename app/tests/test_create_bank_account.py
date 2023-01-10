@@ -1,5 +1,8 @@
 import unittest
 from ..Konto import Konto
+from datetime import date
+from unittest.mock import patch, MagicMock
+from ..SMTP import SMTPConnection
 
 
 class TestCreateBankAccount(unittest.TestCase):
@@ -182,3 +185,33 @@ class HistoryOperations(unittest.TestCase):
             [-50, 50, -50, -1],
             "Historia niepoprawna!",
         )
+
+
+class EmailSending(unittest.TestCase):
+    name = "Dariusz"
+    surname = "Januszewski"
+    pesel = "01212567891"
+
+    def test_success_sending_email_with_history(self):
+        account = Konto(self.name, self.surname, self.pesel)
+        account.saldo = 100
+        account.transfer_out(50)
+        account.transfer_in(50)
+        smtp = SMTPConnection()
+        smtp.wyslij = MagicMock(return_value=True)
+        state = account.wyslij_historie_na_maila("testemail@test.com", smtp)
+        self.assertEqual(state, True, "Wysyłanie maila nie powiodło się!")
+        smtp.wyslij.assert_called_once_with(
+            f"Wyciag z dnia {date.today()}", f"Twoja historia konta to: {account.history}", "testemail@test.com")
+
+    def test_fail_sending_email_with_history(self):
+        account = Konto(self.name, self.surname, self.pesel)
+        account.saldo = 100
+        account.transfer_out(50)
+        account.transfer_in(50)
+        smtp = SMTPConnection()
+        smtp.wyslij = MagicMock(return_value=False)
+        state = account.wyslij_historie_na_maila("testemail@test.com", smtp)
+        self.assertEqual(state, False, "Wysyłanie maila nie powiodło się!")
+        smtp.wyslij.assert_called_once_with(
+            f"Wyciag z dnia {date.today()}", f"Twoja historia konta to: {account.history}", "testemail@test.com")
